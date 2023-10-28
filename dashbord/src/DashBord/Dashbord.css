@@ -1,6 +1,29 @@
-body{
-    background-color: white;
+
+.grid-box{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    height:80vh;
+    background-color:aliceblue;
 }
-div{
-    color: aqua;
+.select{
+    border: 2px solid black;
+    height: 200px;
+    padding:20px 30px;
+    margin: 10px 20px;
+    text-align: center;
+    background-color: white;
+    cursor: pointer;
+   
+  
+}
+.select img{
+    margin:5px  10px;
+}
+.select span{
+    position: relative;
+    right: 50px;
+    top: 10px;
+    font-weight: bold;
+   
 }
