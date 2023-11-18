@@ -210,9 +210,10 @@ export default function Dashbord() {
                
               </div>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <Paper>
-                <TableContainer sx={{ maxHeight: 540 }}>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
+              <Paper sx={{margin:3}}
+              >
+                <TableContainer sx={{ maxHeight: 540 }}  >
                   <Table stickyHeader>
                     <TableHead>
                       <TableRow>
@@ -255,6 +256,7 @@ export default function Dashbord() {
                   component="div"
                   onPageChange={handlePageChange}
                   onRowsPerPageChange={handleRow}
+                 
                 ></TablePagination>
               </Paper>
             </Grid>
