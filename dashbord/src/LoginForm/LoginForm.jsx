@@ -4,6 +4,7 @@ import "./loginForm.css";
 import Button from "@mui/material/Button";
 import { Context } from "../Context/Context";
 import { useNavigate } from "react-router-dom";
+import { Grid } from "@mui/material";
 function LoginForm() {
   const navigate = useNavigate();
   const {
@@ -14,18 +15,20 @@ function LoginForm() {
     errorMessage,
     setErrorMesssage,
   } = useContext(Context);
-  function handleLogin() {
+  function handleLogin(event) {
     const validUsername = "Nagaraj";
     const validPassword = "Nagu@1234";
     if (userName === validUsername && userPassword === validPassword) {
       navigate("dashbord");
-      
+      event.preventDefault();
     } else {
       setErrorMesssage("Invalid username or password");
     }
   }
   return (
     <>
+    <Grid container spacing={1}>
+    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
     <div className="login-box">
       <h1 className="login">LOGIN FORM </h1>
       <div className="box">
@@ -59,6 +62,8 @@ function LoginForm() {
         </form>
       </div>
       </div>
+      </Grid>
+      </Grid>
     </>
   );
 }

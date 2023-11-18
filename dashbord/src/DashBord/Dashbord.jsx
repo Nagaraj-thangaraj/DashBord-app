@@ -1,6 +1,7 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState } from "react";
 import "../DashBord/Dashbord.css";
 import AppBar from "@mui/material/AppBar";
+import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -10,50 +11,19 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { Bar } from "react-chartjs-2";
-import { Context } from "../Context/Context";
 import { Chart } from "chart.js/auto";
-import { userData } from "../ChartData/ChartData";
 import { Pie } from "react-chartjs-2";
-import { DataGrid } from "@mui/x-data-grid";
-const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "firstName", headerName: "First name", width: 130 },
-  { field: "lastName", headerName: "Last name", width: 130 },
-  {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 90,
-  },
-  {
-    field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    valueGetter: (params) =>
-      `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-  },
-];
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+} from "@mui/material";
 
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 10, lastName: "venkatesh", firstName: "thangaraj", age: 25 },
-  { id: 11, lastName: "gomadhi", firstName: "guna", age: 15 },
-  { id: 12, lastName: "bala", firstName: "vinayagam", age: 35 },
-  { id: 13, lastName: "bala", firstName: "vinayagam", age: 35 },
-  { id: 14, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 15, lastName: "Lannister", firstName: "Cersei", age: 42 },
-];
-
-export const options = {
+const barDataoptions = {
   responsive: true,
   plugins: {
     legend: {
@@ -65,44 +35,103 @@ export const options = {
     },
   },
 };
-export const data = {
-  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-  datasets: [
-    {
-      label: "# of Votes",
-      data: [12, 19, 3, 5, 2, 3],
-      backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
-        "rgba(75, 192, 192, 0.2)",
-        "rgba(153, 102, 255, 0.2)",
-        "rgba(255, 159, 64, 0.2)",
-      ],
-      borderColor: [
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 206, 86, 1)",
-        "rgba(75, 192, 192, 1)",
-        "rgba(153, 102, 255, 1)",
-        "rgba(255, 159, 64, 1)",
-      ],
-      borderWidth: 1,
+const PieDataoptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
     },
-  ],
+    title: {
+      display: true,
+      text: "exam Results",
+    },
+  },
 };
-
-export const dataSet = {
-  labels: userData.map((data) => data.year),
-  datasets: [{ label: "Gain", data: userData.map((data) => data.usergain) }],
-};
+const tableColumns = [
+  {
+    id: "Id",
+    name: "Id",
+  },
+  {
+    id: "Name",
+    name: "Name",
+  },
+  {
+    id: "Email",
+    name: "Email",
+  },
+  {
+    id: "PhoneNo",
+    name: "PhoneNo",
+  },
+];
 export default function Dashbord() {
-  const { barData, setBarData } = useContext(Context);
+  const [barData, setBarData] = useState([]);
+  const [pieData, setPieData] = useState({ labels: [], datasets: [] });
+  const [row, rowChange] = useState([]);
+  const [page, setPageChange] = useState(0);
+  const [rowPer, rowPerChange] = useState(5);
+  const dataSet = {
+    labels: barData.map((data) => data.year),
+    datasets: [{ label: "Gain", data: barData.map((data) => data.usergain) }],
+  };
   const LoginPage = useNavigate();
+
+  //PAGENATION FUNCTION
+
+  function handlePageChange(event, newPage) {
+    setPageChange(newPage);
+  }
+  function handleRow(event) {
+    rowPerChange(event.target.value);
+    setPageChange(0);
+  }
+  //BAR DATA API
+  const barDataApi = async () => {
+    try {
+      const response = await fetch(
+        "https://api.npoint.io/0411248715d4fa2d6d6a"
+      );
+      const result = await response.json();
+      setBarData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  //PIE DATA API
+  const pieDataApi = async () => {
+    try {
+      const response = await fetch(
+        "https://api.npoint.io/87f4373b1b36b097acc9"
+      );
+      const result = await response.json();
+      setPieData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  //TABLE DATA API
+  const tableDataApi = async () => {
+    try {
+      const response = await fetch(
+        "https://api.npoint.io/861ffdb31310a041283c"
+      );
+      const result = await response.json();
+      rowChange(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    barDataApi();
+    pieDataApi();
+    tableDataApi();
+  }, []);
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1,position:'sticky',top:0 }}>
         <AppBar position="static">
           <Toolbar>
             <IconButton
@@ -115,7 +144,7 @@ export default function Dashbord() {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              DashBord
+              DashBoard
             </Typography>
             <Button
               variant="outlined"
@@ -148,25 +177,6 @@ export default function Dashbord() {
                   alt="folder"
                   width="80px"
                 />
-
-                <img
-                  src="https://www.iconpacks.net/icons/2/free-user-icon-3297-thumb.png"
-                  alt="folder"
-                  width="80px"
-                />
-
-                <img
-                  src="https://play-lh.googleusercontent.com/bYtqbOcTYOlgc6gqZ2rwb8lptHuwlNE75zYJu6Bn076-hTmvd96HH-6v7S0YUAAJXoJN=w240-h480-rw"
-                  alt="folder"
-                  width="80px"
-                  style={{ borderRadius: "50px" }}
-                />
-
-                <img
-                  src="https://winaero.com/blog/wp-content/uploads/2018/11/folder-icon-big-256.png"
-                  alt="folder"
-                  width="80px"
-                />
               </div>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
@@ -176,33 +186,77 @@ export default function Dashbord() {
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
               <div className="select">
-                <h1>welcome to my Dashbord</h1>
+                <h1>welcome to my Dashboard</h1>
               </div>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
               <div className="select">
-                <Bar data={dataSet} options={options} />
+                <Bar data={dataSet} options={barDataoptions} />
               </div>
             </Grid>
+
             <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
               <div className="select pie">
-                <Pie style={{ width: "100%", height: "100%" }} data={data} />
+                <Pie
+                  style={{ width: "100%", height: "100%" }}
+                  data={pieData}
+                  options={PieDataoptions}
+                />
               </div>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={4} xl={4}>
-              <div className="select table">
-                <DataGrid
-                  rows={rows}
-                  columns={columns}
-                  initialState={{
-                    pagination: {
-                      paginationModel: { page: 0, pageSize: 5 },
-                    },
-                  }}
-                  pageSizeOptions={[5, 10]}
-                  checkboxSelection
-                />
+              <div className="select">
+             <h1>Hello world</h1>
+               
               </div>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+              <Paper>
+                <TableContainer sx={{ maxHeight: 540 }}>
+                  <Table stickyHeader>
+                    <TableHead>
+                      <TableRow>
+                        {tableColumns.map((column, i) => (
+                          <TableCell
+                            key={column.id}
+                            sx={{ background: "black", color: "white" }}
+                          >
+                            {column.name}{" "}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row &&
+                        row
+                          .slice(page * rowPer, page * rowPer + rowPer)
+                          .map((row, index) => {
+                            return (
+                              <TableRow key={index}>
+                                <TableCell key={row.id}>{row.id}</TableCell>
+                                <TableCell key={row.name}>{row.name}</TableCell>
+                                <TableCell key={row.email}>
+                                  {row.email}
+                                </TableCell>
+                                <TableCell key={row.phoneNo}>
+                                  {row.phoneNo}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPage={rowPer}
+                  rowsPerPageOptions={[10, 20, 30, 40, 50, 60]}
+                  page={page}
+                  count={row.length}
+                  component="div"
+                  onPageChange={handlePageChange}
+                  onRowsPerPageChange={handleRow}
+                ></TablePagination>
+              </Paper>
             </Grid>
           </Grid>
         </div>
